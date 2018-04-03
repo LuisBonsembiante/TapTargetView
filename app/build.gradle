@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.getkeepsafe.taptargetviewsample"
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
     }
@@ -20,8 +20,8 @@ android {
 }
 
 dependencies {
-    implementation project(':taptargetview')
-    implementation "com.android.support:appcompat-v7:$defSupportLibraryVersion"
-    implementation "com.android.support:design:$defSupportLibraryVersion"
-    implementation 'com.facebook.stetho:stetho:1.5.0'
+    compile project(':taptargetview')
+    compile "com.android.support:appcompat-v7:$defSupportLibraryVersion"
+    compile "com.android.support:design:$defSupportLibraryVersion"
+    compile 'com.facebook.stetho:stetho:1.5.0'
 }
