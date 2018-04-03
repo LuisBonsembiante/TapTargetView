@@ -48,6 +48,7 @@ public class TapTarget {
 
   float outerCircleAlpha = 0.96f;
   int targetRadius = 44;
+  int rectTargetBorderRadius = 0;
 
   Rect bounds;
   Drawable icon;
@@ -228,14 +229,26 @@ public class TapTarget {
     return this;
   }
 
-  /**  Specify if target is rect **/
+  /**  set target as rect **/
   public TapTarget rectTarget(boolean status) {
     this.isRect = status;
     return this;
   }
 
+  /**  if target is rect **/
   public boolean isRectTarget() {
     return this.isRect;
+  }
+
+  /**  set rect border radius**/
+  public TapTarget rectTargetBorderRadius(int borderRadius) {
+    this.rectTargetBorderRadius = borderRadius;
+    return this;
+  }
+
+  /**  get rect border radius**/
+  public int getRectTargetBorderRadius() {
+    return this.rectTargetBorderRadius;
   }
 
   /** Specify the color resource for the outer circle **/

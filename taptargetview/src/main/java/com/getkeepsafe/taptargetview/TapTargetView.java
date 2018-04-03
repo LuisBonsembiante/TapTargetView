@@ -33,6 +33,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -716,7 +717,8 @@ public class TapTargetView extends View {
     targetCirclePaint.setAlpha(targetCircleAlpha);
     //Should draw rect bound or circle bound
     if (target.isRectTarget()) {
-      c.drawRect(targetBounds, targetCirclePaint);
+      RectF rectF = new RectF(targetBounds.left, targetBounds.top, targetBounds.right, targetBounds.bottom);
+      c.drawRoundRect(rectF, target.getRectTargetBorderRadius(), target.getRectTargetBorderRadius(),targetCirclePaint );
     } else {
       /// No rect bound
       if (targetCirclePulseAlpha > 0) {

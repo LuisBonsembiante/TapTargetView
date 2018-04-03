@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
             // This tap target will target our droid buddy at the given target rect
             TapTarget.forBounds(droidTarget, "Oh look!", "You can point to any part of the screen. You also can't cancel this one!", "GOT IT")
                 .rectTarget(true)
+                .rectTargetBorderRadius(4)
                 .cancelable(false)
                 .skipTextVisible(true)
                 .icon(droid)
