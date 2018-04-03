@@ -500,8 +500,14 @@ public class TapTargetView extends View {
       public void onClick(View v) {
         if (listener == null || outerCircleCenter == null || !isInteractable) return;
 
-        final boolean clickedInTarget =
-            distance(targetBounds.centerX(), targetBounds.centerY(), (int) lastTouchX, (int) lastTouchY) <= targetCircleRadius;
+        boolean clickedInTarget;
+        if (target.isRectTarget()) {
+          clickedInTarget = targetBounds.contains((int) lastTouchX, (int) lastTouchY);
+        }
+        else {
+          clickedInTarget = distance(targetBounds.centerX(), targetBounds.centerY(), (int) lastTouchX, (int) lastTouchY) <= targetCircleRadius;
+        }
+
         final double distanceToOuterCircleCenter = distance(outerCircleCenter[0], outerCircleCenter[1],
             (int) lastTouchX, (int) lastTouchY);
         final boolean clickedInsideOfOuterCircle = distanceToOuterCircleCenter <= outerCircleRadius;
@@ -707,15 +713,20 @@ public class TapTargetView extends View {
       c.restoreToCount(saveCount);
     }
     c.drawCircle(outerCircleCenter[0], outerCircleCenter[1], outerCircleRadius, outerCirclePaint);
-
     targetCirclePaint.setAlpha(targetCircleAlpha);
-    if (targetCirclePulseAlpha > 0) {
-      targetCirclePulsePaint.setAlpha(targetCirclePulseAlpha);
+    //Should draw rect bound or circle bound
+    if (target.isRectTarget()) {
+      c.drawRect(targetBounds, targetCirclePaint);
+    } else {
+      /// No rect bound
+      if (targetCirclePulseAlpha > 0) {
+        targetCirclePulsePaint.setAlpha(targetCirclePulseAlpha);
+        c.drawCircle(targetBounds.centerX(), targetBounds.centerY(),
+                targetCirclePulseRadius, targetCirclePulsePaint);
+      }
       c.drawCircle(targetBounds.centerX(), targetBounds.centerY(),
-          targetCirclePulseRadius, targetCirclePulsePaint);
+              targetCircleRadius, targetCirclePaint);
     }
-    c.drawCircle(targetBounds.centerX(), targetBounds.centerY(),
-        targetCircleRadius, targetCirclePaint);
 
     saveCount = c.save();
     {

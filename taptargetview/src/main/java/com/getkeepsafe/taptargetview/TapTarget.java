@@ -92,6 +92,7 @@ public class TapTarget {
   boolean tintTarget = true;
   boolean transparentTarget = false;
   boolean skipTextVisible = false;
+  boolean isRect = false;
   float descriptionTextAlpha = 0.54f;
   float skipTextAlpha = 0.54f;
 
@@ -225,6 +226,16 @@ public class TapTarget {
   public TapTarget skipTextVisible(boolean visible) {
     this.skipTextVisible = visible;
     return this;
+  }
+
+  /**  Specify if target is rect **/
+  public TapTarget rectTarget(boolean status) {
+    this.isRect = status;
+    return this;
+  }
+
+  public boolean isRectTarget() {
+    return this.isRect;
   }
 
   /** Specify the color resource for the outer circle **/
