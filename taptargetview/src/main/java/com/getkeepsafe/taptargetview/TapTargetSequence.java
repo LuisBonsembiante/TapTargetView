@@ -177,7 +177,7 @@ public class TapTargetSequence {
     if (targets.isEmpty() || !active) {
       return false;
     }
-    if (currentView == null || !currentView.cancelable) {
+    if (currentView == null || (!currentView.cancelable && !currentView.skipTextVisible)) {
       return false;
     }
     currentView.dismiss(false);
