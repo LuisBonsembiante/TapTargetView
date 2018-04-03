@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
             TapTarget.forToolbarOverflow(toolbar, "This will show more options", "But they're not useful :(", "GOT IT").skipTextVisible(true).id(3),
             // This tap target will target our droid buddy at the given target rect
             TapTarget.forBounds(droidTarget, "Oh look!", "You can point to any part of the screen. You also can't cancel this one!", "GOT IT")
+                .rectTarget(true)
                 .cancelable(false)
                 .skipTextVisible(true)
                 .icon(droid)
