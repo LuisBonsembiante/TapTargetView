@@ -55,6 +55,7 @@ import android.view.ViewOutlineProvider;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.util.Log;
 
 /**
  * TapTargetView implements a feature discovery paradigm following Google's Material Design
@@ -426,7 +427,6 @@ public class TapTargetView extends View {
     skipPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
     skipPaint.setAntiAlias(true);
     skipPaint.setColor(Color.LTGRAY);
-//    skipPaint.setTextAlign(Paint.Align.CENTER);
     skipPaint.setStyle(Paint.Style.STROKE);
 
     outerCirclePaint = new Paint();
@@ -517,21 +517,15 @@ public class TapTargetView extends View {
           listener.onTargetClick(TapTargetView.this);
         } else if (clickedInsideOfOuterCircle) {
           Rect textRect = getTextBounds();
-          Rect skipRect = new Rect();
-          String strSkip = skipText.toString();
-          skipPaint.getTextBounds(strSkip, 0, strSkip.length(), skipRect);
+          Rect skipRect = getTextRectWithStringAndPaint(skipText.toString(), skipPaint);
           int skipLayoutWidth = skipRect.width();
           int skipLayoutHeight = skipRect.height();
           int skipLayoutLeft = textRect.left;
           int skipLayoutRight = textRect.left + skipLayoutWidth;
           int skipLayoutBottom = textRect.bottom;
           int skipLayoutTop = textRect.bottom - skipLayoutHeight;
-
-          if ((lastTouchX >= skipLayoutLeft)
-            && (lastTouchX <= skipLayoutRight)
-            && (lastTouchY >= skipLayoutTop)
-            && (lastTouchY <= skipLayoutBottom)
-          ) {
+          Rect absoluteSkipRect = new Rect(skipLayoutLeft, skipLayoutTop, skipLayoutRight, skipLayoutBottom);
+          if (absoluteSkipRect.contains((int) lastTouchX, (int) lastTouchY)) {
             listener.onSkipTextClick(TapTargetView.this);
           }
           else {
@@ -1007,6 +1001,16 @@ public class TapTargetView extends View {
     return Math.max(textRadius, targetRadius) + CIRCLE_PADDING;
   }
 
+  /**
+   * @return text height
+   */
+  private Rect getTextRectWithStringAndPaint(String text, Paint paint) {
+
+    Rect rect = new Rect();
+    paint.getTextBounds(text, 0, text.length(), rect);
+    return rect;
+  }
+
   Rect getTextBounds() {
     final int totalTextHeight = getTotalTextHeight();
     final int totalTextWidth = getTotalTextWidth();
@@ -1060,7 +1064,7 @@ public class TapTargetView extends View {
     }
 
     if (skipLayout != null && skipTextVisible) {
-      totalHeight += skipLayout.getHeight() + TEXT_SPACING;
+      totalHeight += skipLayout.getHeight() + SKIP_TEXT_MARGIN;
     }
 
     return totalHeight;
