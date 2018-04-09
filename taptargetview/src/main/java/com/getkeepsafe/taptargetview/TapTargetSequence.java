@@ -174,15 +174,20 @@ public class TapTargetSequence {
    */
   @UiThread
   public boolean cancel() {
-    if (targets.isEmpty() || !active) {
+    // remove targets.isEmpty() to fix cancelable last Target
+    //    if (targets.isEmpty() || !active) {
+    if (!active) {
       return false;
     }
+
     if (currentView == null || (!currentView.cancelable && !currentView.skipTextVisible)) {
       return false;
     }
     currentView.dismiss(false);
     active = false;
-    targets.clear();
+    if (targets != null && !targets.isEmpty()) {
+      targets.clear();
+    }
     if (listener != null) {
       listener.onSequenceCanceled(currentView.target);
     }
