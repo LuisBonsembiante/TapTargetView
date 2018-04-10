@@ -174,8 +174,6 @@ public class TapTargetSequence {
    */
   @UiThread
   public boolean cancel() {
-    // remove targets.isEmpty() to fix cancelable last Target
-    //    if (targets.isEmpty() || !active) {
     if (!active) {
       return false;
     }

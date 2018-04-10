@@ -47,11 +47,12 @@ public class MainActivity extends AppCompatActivity {
     final TapTargetSequence sequence = new TapTargetSequence(this)
         .targets(
             // This tap target will target the back button, we just need to pass its containing toolbar
-            TapTarget.forToolbarNavigationIcon(toolbar, "This is the back button", sassyDesc, "GOT IT").skipTextVisible(true).id(1),
+            TapTarget.forToolbarNavigationIcon(toolbar, "This is the back button", sassyDesc, "GOT IT").skipTextVisible(false).id(1),
             // Likewise, this tap target will target the search button
             TapTarget.forToolbarMenuItem(toolbar, R.id.search, "This is a search icon", "As you can see, it has gotten pretty dark around here...", "GOT IT")
                 .dimColor(android.R.color.black)
                 .outerCircleColor(R.color.colorAccent)
+                .outerCircleAlpha(0.7f)
                 .targetCircleColor(android.R.color.black)
                 .transparentTarget(true)
                 .textColor(android.R.color.black)

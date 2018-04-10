@@ -47,6 +47,7 @@ import android.text.TextPaint;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +56,7 @@ import android.view.ViewOutlineProvider;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.util.Log;
+import android.widget.Button;
 
 /**
  * TapTargetView implements a feature discovery paradigm following Google's Material Design
@@ -94,7 +95,6 @@ public class TapTargetView extends View {
 
   final TextPaint titlePaint;
   final TextPaint descriptionPaint;
-  final TextPaint skipPaint;
   final Paint outerCirclePaint;
   final Paint outerCircleShadowPaint;
   final Paint targetCirclePaint;
@@ -109,8 +109,6 @@ public class TapTargetView extends View {
   StaticLayout descriptionLayout;
   @Nullable
   CharSequence skipText;
-  @Nullable
-  StaticLayout skipLayout;
   boolean isDark;
   boolean debug;
   boolean shouldTintTarget;
@@ -118,6 +116,8 @@ public class TapTargetView extends View {
   boolean cancelable;
   boolean visible;
   boolean skipTextVisible;
+  @Nullable
+  Button skipButton;
 
   // Debug related variables
   @Nullable
@@ -174,7 +174,6 @@ public class TapTargetView extends View {
     final ViewGroup content = (ViewGroup) decor.findViewById(android.R.id.content);
     final TapTargetView tapTargetView = new TapTargetView(activity, decor, content, target, listener);
     decor.addView(tapTargetView, layoutParams);
-
     return tapTargetView;
   }
 
@@ -422,12 +421,53 @@ public class TapTargetView extends View {
     descriptionPaint.setAntiAlias(true);
     descriptionPaint.setAlpha((int) (0.54f * 255.0f));
 
-    skipPaint = new TextPaint();
-    skipPaint.setTextSize(target.skipTextSizePx(context));
-    skipPaint.setTypeface(Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD));
-    skipPaint.setAntiAlias(true);
-    skipPaint.setColor(Color.LTGRAY);
-    skipPaint.setStyle(Paint.Style.STROKE);
+
+    if (this.skipTextVisible) {
+      skipButton = (Button) LayoutInflater.from(context).inflate(R.layout.skip_button, null);
+      ViewGroup.LayoutParams lps = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+      skipButton.setLayoutParams(lps);
+      skipButton.setTextColor(Color.WHITE);
+      skipButton.setText(target.skipText.toString());
+      skipButton.setBackgroundResource(R.drawable.skip_button_bg);
+      skipButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          if (listener != null) {
+            listener.onSkipTextClick(TapTargetView.this);
+          }
+        }
+      });
+      skipButton.setOnLongClickListener(new OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+          if (listener == null) return false;
+
+          if (listener != null) {
+            return true;
+          }
+
+          return false;
+        }
+      });
+
+      final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+
+      // init skip button position - default hide
+      skipButton.setX(-500);
+      skipButton.setY(-500);
+
+      // add to parent view
+      params.format = PixelFormat.RGBA_8888;
+      params.type = WindowManager.LayoutParams.TYPE_APPLICATION;
+      params.flags = 0;
+      params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
+      params.x = SKIP_TEXT_MARGIN;
+      params.y = SKIP_TEXT_MARGIN;
+      params.width = WindowManager.LayoutParams.WRAP_CONTENT;
+      params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+      parent.addView(skipButton, params);
+
+    }
 
     outerCirclePaint = new Paint();
     outerCirclePaint.setAntiAlias(true);
@@ -481,11 +521,19 @@ public class TapTargetView extends View {
               bottomBoundary = Math.min(rect.bottom, displayMetrics.heightPixels);
             }
 
+            if (skipTextVisible) {
+              // check if it should render top or bottom
+              int []skipPosition = calculateSkipButton();
+              skipButton.setX(skipPosition[0]);
+              skipButton.setY(skipPosition[1]);
+              skipButton.refreshDrawableState();
+            }
+
             drawTintedTarget();
             requestFocus();
             calculateDimensions();
-
             startExpandAnimation();
+
           }
         });
       }
@@ -516,21 +564,7 @@ public class TapTargetView extends View {
           isInteractable = false;
           listener.onTargetClick(TapTargetView.this);
         } else if (clickedInsideOfOuterCircle) {
-          Rect textRect = getTextBounds();
-          Rect skipRect = getTextRectWithStringAndPaint(skipText.toString(), skipPaint);
-          int skipLayoutWidth = skipRect.width();
-          int skipLayoutHeight = skipRect.height();
-          int skipLayoutLeft = textRect.left;
-          int skipLayoutRight = textRect.left + skipLayoutWidth;
-          int skipLayoutBottom = textRect.bottom;
-          int skipLayoutTop = textRect.bottom - skipLayoutHeight;
-          Rect absoluteSkipRect = new Rect(skipLayoutLeft, skipLayoutTop, skipLayoutRight, skipLayoutBottom);
-          if (absoluteSkipRect.contains((int) lastTouchX, (int) lastTouchY)) {
-            listener.onSkipTextClick(TapTargetView.this);
-          }
-          else {
-            listener.onOuterCircleClick(TapTargetView.this);
-          }
+          listener.onOuterCircleClick(TapTargetView.this);
         } else if (cancelable) {
           isInteractable = false;
           listener.onTargetCancel(TapTargetView.this);
@@ -551,6 +585,50 @@ public class TapTargetView extends View {
         return false;
       }
     });
+  }
+
+  private int[] calculateSkipButton() {
+    final WindowManager windowManager
+            = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+    final DisplayMetrics displayMetrics = new DisplayMetrics();
+    windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+
+    // bottom right is default
+    int bottomRightX = displayMetrics.widthPixels - skipButton.getWidth() - SKIP_TEXT_MARGIN;
+    int bottomRightY = displayMetrics.heightPixels - skipButton.getHeight() - SKIP_TEXT_MARGIN;
+
+    // bottom left
+    int bottomLeftX = SKIP_TEXT_MARGIN;
+    int bottomLeftY = displayMetrics.heightPixels - skipButton.getHeight() - SKIP_TEXT_MARGIN;
+
+    // top right
+    int topRightX = displayMetrics.widthPixels - skipButton.getWidth() - SKIP_TEXT_MARGIN;
+    int topRightY = SKIP_TEXT_MARGIN;
+
+    // top left
+    int topLeftX = SKIP_TEXT_MARGIN;
+    int topLeftY = SKIP_TEXT_MARGIN;
+
+    if (!isContainedInOuterCircle(bottomRightX, bottomRightY)) {
+      return new int[]{ bottomRightX, bottomRightY };
+    } else if (!isContainedInOuterCircle(topRightX, topRightY)) {
+      return new int[]{ topRightX, topRightY };
+    } else if (!isContainedInOuterCircle(bottomLeftX, bottomLeftY)) {
+      return new int[]{ bottomLeftX, bottomLeftY };
+    } else if (!isContainedInOuterCircle(topLeftX, topLeftY)) {
+      return new int[]{ topLeftX, topLeftY };
+    }
+
+    return new int[]{ bottomRightX, bottomRightY };
+  }
+
+  private boolean isContainedInOuterCircle(int x, int y) {
+    if (outerCircleCenter == null) {
+      return false;
+    }
+    final double distanceToOuterCircleCenter = distance(outerCircleCenter[0], outerCircleCenter[1],
+            x, y);
+    return distanceToOuterCircleCenter <= outerCircleRadius;
   }
 
   private void startExpandAnimation() {
@@ -640,12 +718,7 @@ public class TapTargetView extends View {
       descriptionPaint.setColor(titlePaint.getColor());
     }
 
-    final Integer skipTextColor = target.skipTextColorInt(context);
-    if (skipTextColor != null) {
-      skipPaint.setColor(skipTextColor);
-    } else {
-      skipPaint.setColor(titlePaint.getColor());
-    }
+
 
     if (target.titleTypeface != null) {
       titlePaint.setTypeface(target.titleTypeface);
@@ -653,10 +726,6 @@ public class TapTargetView extends View {
 
     if (target.descriptionTypeface != null) {
       descriptionPaint.setTypeface(target.descriptionTypeface);
-    }
-
-    if (target.skipTypeface != null) {
-      skipPaint.setTypeface(target.skipTypeface);
     }
   }
 
@@ -737,18 +806,6 @@ public class TapTargetView extends View {
         descriptionPaint.setAlpha((int) (target.descriptionTextAlpha * textAlpha));
         descriptionLayout.draw(c);
       }
-
-      if (skipLayout != null && titleLayout != null && skipTextVisible) {
-        if (descriptionLayout != null) {
-          c.translate(0, descriptionLayout.getHeight() + SKIP_TEXT_MARGIN);
-        }
-        else {
-          c.translate(0, titleLayout.getHeight() + SKIP_TEXT_MARGIN);
-        }
-
-        skipPaint.setUnderlineText(true);
-        skipLayout.draw(c);
-      }
     }
     c.restoreToCount(saveCount);
 
@@ -770,6 +827,8 @@ public class TapTargetView extends View {
     if (debug) {
       drawDebugInformation(c);
     }
+
+
   }
 
   @Override
@@ -830,6 +889,7 @@ public class TapTargetView extends View {
   private void finishDismiss(boolean userInitiated) {
     onDismiss(userInitiated);
     ViewUtil.removeView(parent, TapTargetView.this);
+    ViewUtil.removeView(parent, this.skipButton);
   }
 
   /** Specify whether to draw a wireframe around the view, useful for debugging **/
@@ -945,12 +1005,6 @@ public class TapTargetView extends View {
     } else {
       descriptionLayout = null;
     }
-    if (skipText != null) {
-      skipLayout = new StaticLayout(skipText, skipPaint, textWidth,
-              Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-    } else {
-      skipLayout = null;
-    }
   }
 
   float halfwayLerp(float lerp) {
@@ -999,16 +1053,6 @@ public class TapTargetView extends View {
     final int textRadius = maxDistanceToPoints(centerX, centerY, textBounds);
     final int targetRadius = maxDistanceToPoints(centerX, centerY, expandedBounds);
     return Math.max(textRadius, targetRadius) + CIRCLE_PADDING;
-  }
-
-  /**
-   * @return text height
-   */
-  private Rect getTextRectWithStringAndPaint(String text, Paint paint) {
-
-    Rect rect = new Rect();
-    paint.getTextBounds(text, 0, text.length(), rect);
-    return rect;
   }
 
   Rect getTextBounds() {
@@ -1063,10 +1107,6 @@ public class TapTargetView extends View {
       totalHeight += descriptionLayout.getHeight() + TEXT_SPACING;
     }
 
-    if (skipLayout != null && skipTextVisible) {
-      totalHeight += skipLayout.getHeight() + SKIP_TEXT_MARGIN;
-    }
-
     return totalHeight;
   }
 
@@ -1080,10 +1120,6 @@ public class TapTargetView extends View {
 
     if (descriptionLayout != null) {
       totalWidth = Math.max(titleLayout.getWidth(), descriptionLayout.getWidth());
-    }
-
-    if (skipLayout != null && skipTextVisible) {
-      totalWidth = Math.max(totalWidth, skipLayout.getWidth());
     }
 
     return totalWidth;
