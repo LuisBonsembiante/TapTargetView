@@ -181,12 +181,17 @@ public class TapTargetView extends View {
     if (activity == null) throw new IllegalArgumentException("Activity is null");
 
     final ViewGroup decor = (ViewGroup) activity.getWindow().getDecorView();
-    final ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     final ViewGroup content = (ViewGroup) decor.findViewById(android.R.id.content);
     final TapTargetView tapTargetView = new TapTargetView(activity, decor, content, target, listener);
-    tapTargetView.bringToFront();
-    tapTargetView.invalidate();
+
+    final WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+    layoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION;
+    layoutParams.flags = 0;
+    layoutParams.gravity = Gravity.LEFT | Gravity.TOP;
+    layoutParams.x = 0;
+    layoutParams.y = 0;
+    layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+    layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
     decor.addView(tapTargetView, layoutParams);
     decor.bringChildToFront(tapTargetView);
     decor.invalidate();
