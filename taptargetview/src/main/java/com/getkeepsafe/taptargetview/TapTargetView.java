@@ -19,6 +19,7 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
@@ -68,6 +69,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 /**
  * TapTargetView implements a feature discovery paradigm following Google's Material Design
@@ -98,6 +101,7 @@ public class TapTargetView extends View {
   final int SHADOW_JITTER_DIM;
   final int SKIP_TEXT_MARGIN;
   final int SKIP_TEXT_MARGIN_TOP;
+  final int SKIP_TEXT_MARGIN_BOTTOM;
 
   @Nullable
   final ViewGroup boundingParent;
@@ -129,7 +133,8 @@ public class TapTargetView extends View {
   boolean visible;
   boolean skipTextVisible;
   @Nullable
-  Button skipButton;
+  public Button skipButton;
+  public WindowManager.LayoutParams skipButtonLayoutParams;
 
   // Debug related variables
   @Nullable
@@ -193,8 +198,6 @@ public class TapTargetView extends View {
     layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
     layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
     decor.addView(tapTargetView, layoutParams);
-    decor.bringChildToFront(tapTargetView);
-    decor.invalidate();
     return tapTargetView;
   }
 
@@ -216,10 +219,14 @@ public class TapTargetView extends View {
     params.y = 0;
     params.width = WindowManager.LayoutParams.MATCH_PARENT;
     params.height = WindowManager.LayoutParams.MATCH_PARENT;
-
-    final TapTargetView tapTargetView = new TapTargetView(context, windowManager, null, target, listener);
-    windowManager.addView(tapTargetView, params);
-
+    FrameLayout layout =new FrameLayout(context);
+    final TapTargetView tapTargetView = new TapTargetView(context, layout, null, target, listener);
+    layout.addView(tapTargetView, params);
+    if (tapTargetView.skipTextVisible) {
+      layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
+    }
+//
+    windowManager.addView(layout, params);
     return tapTargetView;
   }
 
@@ -426,7 +433,8 @@ public class TapTargetView extends View {
     SHADOW_JITTER_DIM = UiUtil.dp(context, 1);
     TARGET_PULSE_RADIUS = (int) (0.1f * TARGET_RADIUS);
     SKIP_TEXT_MARGIN = UiUtil.dp(context, 20);
-    SKIP_TEXT_MARGIN_TOP = UiUtil.dp(context, 40);
+    SKIP_TEXT_MARGIN_TOP = UiUtil.dp(context, 20);
+    SKIP_TEXT_MARGIN_BOTTOM = UiUtil.dp(context, 40);
 
     outerCirclePath = new Path();
     targetBounds = new Rect();
@@ -513,21 +521,23 @@ public class TapTargetView extends View {
         }
       });
 
-      final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+      skipButtonLayoutParams = new WindowManager.LayoutParams();
       // init skip button position - default hide
       skipButton.setX(-500);
       skipButton.setY(-500);
 
       // add to parent view
-      params.format = PixelFormat.RGBA_8888;
-      params.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
-      params.flags = 0;
-      params.gravity = Gravity.LEFT | Gravity.TOP;
-      params.x = SKIP_TEXT_MARGIN;
-      params.y = SKIP_TEXT_MARGIN;
-      params.width = WindowManager.LayoutParams.WRAP_CONTENT;
-      params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-      parent.addView(skipButton, params);
+      skipButtonLayoutParams.format = PixelFormat.RGBA_8888;
+      skipButtonLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
+      skipButtonLayoutParams.flags = 0;
+      skipButtonLayoutParams.gravity = Gravity.LEFT | Gravity.TOP;
+      skipButtonLayoutParams.x = 0;
+      skipButtonLayoutParams.y = 0;
+      skipButtonLayoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+      skipButtonLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+      if (boundingParent != null) {
+        parent.addView(skipButton, skipButtonLayoutParams);
+      }
 
     }
 
@@ -657,11 +667,11 @@ public class TapTargetView extends View {
 
     // bottom right is default
     int bottomRightX = displayMetrics.widthPixels - skipButton.getWidth() - SKIP_TEXT_MARGIN;
-    int bottomRightY = displayMetrics.heightPixels - skipButton.getHeight() - SKIP_TEXT_MARGIN;
+    int bottomRightY = displayMetrics.heightPixels - skipButton.getHeight() - SKIP_TEXT_MARGIN_BOTTOM;
 
     // bottom left
     int bottomLeftX = SKIP_TEXT_MARGIN;
-    int bottomLeftY = displayMetrics.heightPixels - skipButton.getHeight() - SKIP_TEXT_MARGIN;
+    int bottomLeftY = displayMetrics.heightPixels - skipButton.getHeight() - SKIP_TEXT_MARGIN_BOTTOM;
 
     // top right
     int topRightX = displayMetrics.widthPixels - skipButton.getWidth() - SKIP_TEXT_MARGIN;
