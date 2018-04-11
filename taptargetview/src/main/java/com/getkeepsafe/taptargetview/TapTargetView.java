@@ -64,6 +64,7 @@ import android.view.ViewGroup;
 import android.view.ViewManager;
 import android.view.ViewOutlineProvider;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
@@ -96,6 +97,7 @@ public class TapTargetView extends View {
   final int SHADOW_DIM;
   final int SHADOW_JITTER_DIM;
   final int SKIP_TEXT_MARGIN;
+  final int SKIP_TEXT_MARGIN_TOP;
 
   @Nullable
   final ViewGroup boundingParent;
@@ -415,6 +417,7 @@ public class TapTargetView extends View {
     SHADOW_JITTER_DIM = UiUtil.dp(context, 1);
     TARGET_PULSE_RADIUS = (int) (0.1f * TARGET_RADIUS);
     SKIP_TEXT_MARGIN = UiUtil.dp(context, 20);
+    SKIP_TEXT_MARGIN_TOP = UiUtil.dp(context, 40);
 
     outerCirclePath = new Path();
     targetBounds = new Rect();
@@ -571,6 +574,11 @@ public class TapTargetView extends View {
               bottomBoundary = Math.min(rect.bottom, displayMetrics.heightPixels);
             }
 
+            drawTintedTarget();
+            requestFocus();
+            calculateDimensions();
+            startExpandAnimation();
+
             if (skipTextVisible) {
               // check if it should render top or bottom
               int []skipPosition = calculateSkipButton();
@@ -578,11 +586,6 @@ public class TapTargetView extends View {
               skipButton.setY(skipPosition[1]);
               skipButton.refreshDrawableState();
             }
-
-            drawTintedTarget();
-            requestFocus();
-            calculateDimensions();
-            startExpandAnimation();
 
           }
         });
@@ -653,11 +656,11 @@ public class TapTargetView extends View {
 
     // top right
     int topRightX = displayMetrics.widthPixels - skipButton.getWidth() - SKIP_TEXT_MARGIN;
-    int topRightY = SKIP_TEXT_MARGIN;
+    int topRightY = SKIP_TEXT_MARGIN_TOP;
 
     // top left
     int topLeftX = SKIP_TEXT_MARGIN;
-    int topLeftY = SKIP_TEXT_MARGIN;
+    int topLeftY = SKIP_TEXT_MARGIN_TOP;
 
     if (!isContainedInOuterCircle(bottomRightX, bottomRightY)) {
       return new int[]{ bottomRightX, bottomRightY };
@@ -678,7 +681,7 @@ public class TapTargetView extends View {
     }
     final double distanceToOuterCircleCenter = distance(outerCircleCenter[0], outerCircleCenter[1],
             x, y);
-    return distanceToOuterCircleCenter <= outerCircleRadius;
+    return distanceToOuterCircleCenter <= calculatedOuterCircleRadius;
   }
 
   private void startExpandAnimation() {
