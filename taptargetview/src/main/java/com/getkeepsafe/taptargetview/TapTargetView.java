@@ -441,12 +441,7 @@ public class TapTargetView extends View {
       // set text properties
       try {
         int skipTextColor = target.skipTextColorInt(context);
-        if (skipTextColor > -1) {
-          skipButton.setTextColor(skipTextColor);
-        }
-        else {
-          skipButton.setTextColor(target.titleTextColorInt(context));
-        }
+        skipButton.setTextColor(skipTextColor);
       } catch(Exception e) {
         skipButton.setTextColor(Color.WHITE);
       }
@@ -458,12 +453,7 @@ public class TapTargetView extends View {
       GradientDrawable normalState = (GradientDrawable) skipButtonResourceLayer.findDrawableByLayerId(R.id.skip_button_normal);
       try {
         int skipButtonBackgroundColor = target.skipButtonBackgroundColorInt(context);
-        if (skipButtonBackgroundColor > -1) {
-          normalState.setColor(skipButtonBackgroundColor);
-        }
-        else {
-          normalState.setColor(target.outerCircleColorInt(context));
-        }
+        normalState.setColor(skipButtonBackgroundColor);
       } catch (Exception e) {
         normalState.setColor(Color.BLUE);
       }
@@ -584,7 +574,6 @@ public class TapTargetView extends View {
             if (skipTextVisible) {
               // check if it should render top or bottom
               int []skipPosition = calculateSkipButton();
-              Log.i("TAP_TARGET_VIEW", "____" + skipPosition[0] + "___" +  skipPosition[1]);
               skipButton.setX(skipPosition[0]);
               skipButton.setY(skipPosition[1]);
               skipButton.refreshDrawableState();

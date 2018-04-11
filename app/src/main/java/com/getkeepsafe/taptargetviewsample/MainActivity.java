@@ -1,6 +1,7 @@
 package com.getkeepsafe.taptargetviewsample;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
                 .transparentTarget(true)
                 .textColor(android.R.color.black)
                 .skipTextVisible(true)
+                .skipButtonBackgroundColorInt(Color.YELLOW)
+                .skipTextColorInt(Color.GREEN)
                 .id(2),
             // You can also target the overflow button in your toolbar
             TapTarget.forToolbarOverflow(toolbar, "This will show more options", "But they're not useful :(", "GOT IT").skipTextVisible(true).id(3),
