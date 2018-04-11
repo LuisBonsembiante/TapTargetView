@@ -186,6 +186,8 @@ public class TapTargetView extends View {
     final ViewGroup content = (ViewGroup) decor.findViewById(android.R.id.content);
     final TapTargetView tapTargetView = new TapTargetView(activity, decor, content, target, listener);
     decor.addView(tapTargetView, layoutParams);
+    decor.bringChildToFront(tapTargetView);
+    decor.invalidate();
     return tapTargetView;
   }
 
