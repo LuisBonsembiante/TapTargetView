@@ -54,6 +54,7 @@ import android.text.SpannableStringBuilder;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -583,6 +584,7 @@ public class TapTargetView extends View {
             if (skipTextVisible) {
               // check if it should render top or bottom
               int []skipPosition = calculateSkipButton();
+              Log.i("TAP_TARGET_VIEW", "____" + skipPosition[0] + "___" +  skipPosition[1]);
               skipButton.setX(skipPosition[0]);
               skipButton.setY(skipPosition[1]);
               skipButton.refreshDrawableState();
