@@ -510,7 +510,7 @@ public class TapTargetView extends View {
       params.format = PixelFormat.RGBA_8888;
       params.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
       params.flags = 0;
-      params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
+      params.gravity = Gravity.LEFT | Gravity.TOP;
       params.x = SKIP_TEXT_MARGIN;
       params.y = SKIP_TEXT_MARGIN;
       params.width = WindowManager.LayoutParams.WRAP_CONTENT;
