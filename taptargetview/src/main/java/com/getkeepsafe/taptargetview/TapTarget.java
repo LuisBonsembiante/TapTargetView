@@ -16,6 +16,7 @@
 package com.getkeepsafe.taptargetview;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -68,13 +69,16 @@ public class TapTarget {
   private int descriptionTextColorRes = -1;
   @ColorRes
   private int skipTextColorRes = -1;
+  @ColorRes
+  private int skipButtonBackgroundColorRes = -1;
 
-  private Integer outerCircleColor = null;
+  private Integer outerCircleColor = Color.BLUE;
   private Integer targetCircleColor = null;
   private Integer dimColor = null;
   private Integer titleTextColor = null;
   private Integer descriptionTextColor = null;
-  private Integer skipTextColor = null;
+  private Integer skipTextColor = Color.WHITE;
+  private Integer skipButtonBackgroundColor = Color.BLUE;
 
   @DimenRes
   private int titleTextDimen = -1;
@@ -273,6 +277,15 @@ public class TapTarget {
     return this;
   }
 
+  /**  get outerCircleAlpha **/
+  public float outerCircleAlpha() {
+    if (this.outerCircleAlpha < 0.0f || this.outerCircleAlpha > 1.0f) {
+      return this.outerCircleAlpha;
+    }
+    this.outerCircleAlpha = 1.0f;
+    return this.outerCircleAlpha;
+  }
+
   /** Specify the color resource for the target circle **/
   public TapTarget targetCircleColor(@ColorRes int color) {
     this.targetCircleColorRes = color;
@@ -339,6 +352,11 @@ public class TapTarget {
   // TODO(Hilal): In v2, this API should be cleaned up / torched
   public TapTarget skipTextColorInt(@ColorInt int color) {
     this.skipTextColor = color;
+    return this;
+  }
+
+  public TapTarget skipButtonBackgroundColorInt(@ColorInt int color) {
+    this.skipButtonBackgroundColor = color;
     return this;
   }
 
@@ -571,6 +589,11 @@ public class TapTarget {
   @Nullable
   Integer skipTextColorInt(Context context) {
     return colorResOrInt(context, skipTextColor, skipTextColorRes);
+  }
+
+  @Nullable
+  Integer skipButtonBackgroundColorInt(Context context) {
+    return colorResOrInt(context, skipButtonBackgroundColor, skipButtonBackgroundColorRes);
   }
 
   int titleTextSizePx(Context context) {

@@ -25,6 +25,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -37,7 +38,15 @@ import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.graphics.drawable.shapes.RectShape;
+import android.graphics.drawable.shapes.RoundRectShape;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.DynamicLayout;
 import android.text.Layout;
@@ -424,11 +433,62 @@ public class TapTargetView extends View {
 
     if (this.skipTextVisible) {
       skipButton = (Button) LayoutInflater.from(context).inflate(R.layout.skip_button, null);
+      // init layout param
       ViewGroup.LayoutParams lps = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
       skipButton.setLayoutParams(lps);
-      skipButton.setTextColor(Color.WHITE);
+
+      // set text properties
+      try {
+        int skipTextColor = target.skipTextColorInt(context);
+        if (skipTextColor > -1) {
+          skipButton.setTextColor(skipTextColor);
+        }
+        else {
+          skipButton.setTextColor(target.titleTextColorInt(context));
+        }
+      } catch(Exception e) {
+        skipButton.setTextColor(Color.WHITE);
+      }
       skipButton.setText(target.skipText.toString());
-      skipButton.setBackgroundResource(R.drawable.skip_button_bg);
+
+      // set background properties
+      LayerDrawable skipButtonResourceLayer = (LayerDrawable) getResources().getDrawable(R.drawable.skip_button_bg);
+      // normal state
+      GradientDrawable normalState = (GradientDrawable) skipButtonResourceLayer.findDrawableByLayerId(R.id.skip_button_normal);
+      try {
+        int skipButtonBackgroundColor = target.skipButtonBackgroundColorInt(context);
+        if (skipButtonBackgroundColor > -1) {
+          normalState.setColor(skipButtonBackgroundColor);
+        }
+        else {
+          normalState.setColor(target.outerCircleColorInt(context));
+        }
+      } catch (Exception e) {
+        normalState.setColor(Color.BLUE);
+      }
+
+      int alpha = (int) (target.outerCircleAlpha() * 255);
+      normalState.setAlpha(alpha);
+      normalState.setCornerRadius(4);
+
+      // focus state
+      GradientDrawable focusState = (GradientDrawable) skipButtonResourceLayer.findDrawableByLayerId(R.id.skip_button_focused);
+      int focusAlpha = (int) (0.72f * 255);
+      focusState.setColor(Color.LTGRAY);
+      focusState.setAlpha(focusAlpha);
+      focusState.setCornerRadius(4);
+
+      StateListDrawable layers = new StateListDrawable();
+      layers.addState(new int[] { android.R.attr.state_pressed }, focusState);
+      layers.addState(new int[] {  }, normalState);
+
+
+      if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN){
+        skipButton.setBackgroundDrawable(layers);
+      }else{
+        skipButton.setBackground(layers);
+      }
+
       skipButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -451,7 +511,6 @@ public class TapTargetView extends View {
       });
 
       final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-
       // init skip button position - default hide
       skipButton.setX(-500);
       skipButton.setY(-500);
@@ -717,8 +776,6 @@ public class TapTargetView extends View {
     } else {
       descriptionPaint.setColor(titlePaint.getColor());
     }
-
-
 
     if (target.titleTypeface != null) {
       titlePaint.setTypeface(target.titleTypeface);
