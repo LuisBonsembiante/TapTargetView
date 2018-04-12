@@ -223,6 +223,8 @@ public class TapTargetView extends View {
     final TapTargetView tapTargetView = new TapTargetView(context, layout, null, target, listener);
     layout.addView(tapTargetView, params);
     if (tapTargetView.skipTextVisible) {
+        int blurColor = Color.parseColor("#33000000");
+        layout.setBackgroundColor(blurColor);
       layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
     }
 
