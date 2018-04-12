@@ -1,5 +1,6 @@
 package com.getkeepsafe.taptargetviewsample;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -44,8 +45,10 @@ public class MainActivity extends AppCompatActivity {
 
     final SpannableString sassyDesc = new SpannableString("It allows you to go back, sometimes");
     sassyDesc.setSpan(new StyleSpan(Typeface.ITALIC), sassyDesc.length() - "sometimes".length(), sassyDesc.length(), 0);
+
+    final Dialog dialog = new AlertDialog.Builder(this).create();
     // We have a sequence of targets, so lets build it!
-    final TapTargetSequence sequence = new TapTargetSequence(this)
+    final TapTargetSequence sequence = new TapTargetSequence(dialog)
         .targets(
             // This tap target will target the back button, we just need to pass its containing toolbar
             TapTarget.forToolbarNavigationIcon(toolbar, "This is the back button", sassyDesc, "GOT IT").skipTextVisible(false).id(1),

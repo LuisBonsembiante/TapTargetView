@@ -225,7 +225,7 @@ public class TapTargetView extends View {
     if (tapTargetView.skipTextVisible) {
       layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
     }
-//
+
     windowManager.addView(layout, params);
     return tapTargetView;
   }
@@ -960,6 +960,11 @@ public class TapTargetView extends View {
     onDismiss(userInitiated);
     ViewUtil.removeView(parent, TapTargetView.this);
     ViewUtil.removeView(parent, this.skipButton);
+    if (boundingParent == null) {
+      final WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+      final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+      ViewUtil.removeView(windowManager, (View)parent);
+    }
   }
 
   /** Specify whether to draw a wireframe around the view, useful for debugging **/
