@@ -222,9 +222,15 @@ public class TapTargetView extends View {
     FrameLayout layout =new FrameLayout(context);
     final TapTargetView tapTargetView = new TapTargetView(context, layout, null, target, listener);
     layout.addView(tapTargetView, params);
-    if (tapTargetView.skipTextVisible) {
-        int blurColor = Color.parseColor("#33000000");
-        layout.setBackgroundColor(blurColor);
+    if (target.skipTextVisible) {
+        if (!target.transparentTarget) {
+            int blurColor = Color.parseColor("#33000000");
+            layout.setBackgroundColor(blurColor);
+        }
+        else {
+            int transparentColor = Color.parseColor("#00000000");
+            layout.setBackgroundColor(transparentColor);
+        }
       layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
     }
 
@@ -479,9 +485,10 @@ public class TapTargetView extends View {
       } catch (Exception e) {
         normalState.setColor(Color.BLUE);
       }
-
-//      int alpha = (int) (target.outerCircleAlpha() * 255);
-//      normalState.setAlpha(alpha);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+         normalState.setOrientation(GradientDrawable.Orientation.BL_TR);
+         normalState.setGradientRadius(10);
+      }
       normalState.setCornerRadius(4);
 
       // focus state
@@ -495,14 +502,13 @@ public class TapTargetView extends View {
       layers.addState(new int[] { android.R.attr.state_pressed }, focusState);
       layers.addState(new int[] {  }, normalState);
 
-
       if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN){
         skipButton.setBackgroundDrawable(layers);
       }else{
         skipButton.setBackground(layers);
       }
 
-      skipButton.setOnClickListener(new View.OnClickListener() {
+      skipButton.setOnClickListener(new OnClickListener() {
         @Override
         public void onClick(View view) {
           if (listener != null) {
