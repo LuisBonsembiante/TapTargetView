@@ -226,12 +226,9 @@ public class TapTargetView extends View {
         if (!target.transparentTarget) {
             int blurColor = Color.parseColor("#33000000");
             layout.setBackgroundColor(blurColor);
+            tapTargetView.skipButton.setAlpha(1);
         }
-        else {
-            int transparentColor = Color.parseColor("#00000000");
-            layout.setBackgroundColor(transparentColor);
-        }
-      layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
+        layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
     }
 
     windowManager.addView(layout, params);
