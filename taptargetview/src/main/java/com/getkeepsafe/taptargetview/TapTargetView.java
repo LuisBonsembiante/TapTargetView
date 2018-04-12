@@ -480,8 +480,8 @@ public class TapTargetView extends View {
         normalState.setColor(Color.BLUE);
       }
 
-      int alpha = (int) (target.outerCircleAlpha() * 255);
-      normalState.setAlpha(alpha);
+//      int alpha = (int) (target.outerCircleAlpha() * 255);
+//      normalState.setAlpha(alpha);
       normalState.setCornerRadius(4);
 
       // focus state
