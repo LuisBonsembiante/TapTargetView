@@ -224,13 +224,13 @@ public class TapTargetView extends View {
     params.height = WindowManager.LayoutParams.MATCH_PARENT;
 
     FrameLayout layout =new FrameLayout(context);
-    layout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     final TapTargetView tapTargetView = new TapTargetView(context, layout, null, target, listener);
     layout.addView(tapTargetView, params);
     if (target.skipTextVisible) {
         layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
     }
     windowManager.addView(layout, params);
+    Log.d("TapTargetViewDebug", "createNew tapTargetView");
     return tapTargetView;
   }
 
@@ -843,8 +843,10 @@ public class TapTargetView extends View {
 
   @Override
   protected void onDraw(Canvas c) {
+    Log.d("TapTargetViewDebug", "onDraw STEP 0 tapTargetView");
     if (isDismissed || outerCircleCenter == null) return;
 
+    Log.d("TapTargetViewDebug", "onDraw STEP 1 tapTargetView");
     if (topBoundary > 0 && bottomBoundary > 0) {
       c.clipRect(0, topBoundary, getWidth(), bottomBoundary);
     }
@@ -975,6 +977,7 @@ public class TapTargetView extends View {
 
   private void finishDismiss(boolean userInitiated) {
     onDismiss(userInitiated);
+    Log.d("TapTargetViewDebug", "finishDismiss tapTargetView");
     ViewUtil.removeView(parent, TapTargetView.this);
     ViewUtil.removeView(parent, this.skipButton);
     if (boundingParent == null) {
