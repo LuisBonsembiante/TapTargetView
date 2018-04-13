@@ -99,7 +99,10 @@ public class TapTargetView extends View {
   final int GUTTER_DIM;
   final int SHADOW_DIM;
   final int SHADOW_JITTER_DIM;
+
   final int SKIP_TEXT_MARGIN;
+  final int SKIP_TEXT_MARGIN_RIGHT;
+  final int SKIP_TEXT_MARGIN_LEFT;
   final int SKIP_TEXT_MARGIN_TOP;
   final int SKIP_TEXT_MARGIN_BOTTOM;
 
@@ -219,13 +222,14 @@ public class TapTargetView extends View {
     params.y = 0;
     params.width = WindowManager.LayoutParams.MATCH_PARENT;
     params.height = WindowManager.LayoutParams.MATCH_PARENT;
+
     FrameLayout layout =new FrameLayout(context);
+    layout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     final TapTargetView tapTargetView = new TapTargetView(context, layout, null, target, listener);
     layout.addView(tapTargetView, params);
     if (target.skipTextVisible) {
         layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
     }
-
     windowManager.addView(layout, params);
     return tapTargetView;
   }
@@ -432,9 +436,12 @@ public class TapTargetView extends View {
     SHADOW_DIM = UiUtil.dp(context, 8);
     SHADOW_JITTER_DIM = UiUtil.dp(context, 1);
     TARGET_PULSE_RADIUS = (int) (0.1f * TARGET_RADIUS);
-    SKIP_TEXT_MARGIN = UiUtil.dp(context, 20);
-    SKIP_TEXT_MARGIN_TOP = UiUtil.dp(context, 20);
-    SKIP_TEXT_MARGIN_BOTTOM = UiUtil.dp(context, 40);
+
+    SKIP_TEXT_MARGIN = UiUtil.dp(context, target.skipButtonMargin);
+    SKIP_TEXT_MARGIN_LEFT = target.skipButtonMarginLeft == -1 ? SKIP_TEXT_MARGIN : UiUtil.dp(context, target.skipButtonMarginLeft);
+    SKIP_TEXT_MARGIN_TOP = target.skipButtonMarginTop == -1 ? SKIP_TEXT_MARGIN : UiUtil.dp(context, target.skipButtonMarginTop);
+    SKIP_TEXT_MARGIN_RIGHT = target.skipButtonMarginRight == -1 ? SKIP_TEXT_MARGIN : UiUtil.dp(context, target.skipButtonMarginRight);
+    SKIP_TEXT_MARGIN_BOTTOM = target.skipButtonMarginBottom == -1 ? SKIP_TEXT_MARGIN : UiUtil.dp(context, target.skipButtonMarginBottom);
 
     outerCirclePath = new Path();
     targetBounds = new Rect();
@@ -665,20 +672,30 @@ public class TapTargetView extends View {
     final DisplayMetrics displayMetrics = new DisplayMetrics();
     windowManager.getDefaultDisplay().getMetrics(displayMetrics);
 
+    // Fit status bar if it exist
+    int statusBarHeight = 0;
+    int resourceId = getContext().getResources().getIdentifier("status_bar_height", "dimen", "android");
+    if (resourceId > 0) {
+      statusBarHeight = getContext().getResources().getDimensionPixelSize(resourceId);
+    }
+
+    int screenWidth = displayMetrics.widthPixels;
+    int screenHeight = displayMetrics.heightPixels - statusBarHeight;
+
     // bottom right is default
-    int bottomRightX = displayMetrics.widthPixels - skipButton.getWidth() - SKIP_TEXT_MARGIN;
-    int bottomRightY = displayMetrics.heightPixels - skipButton.getHeight() - SKIP_TEXT_MARGIN_BOTTOM;
+    int bottomRightX = screenWidth - skipButton.getWidth() - SKIP_TEXT_MARGIN_RIGHT;
+    int bottomRightY = screenHeight - skipButton.getHeight() - SKIP_TEXT_MARGIN_BOTTOM;
 
     // bottom left
-    int bottomLeftX = SKIP_TEXT_MARGIN;
-    int bottomLeftY = displayMetrics.heightPixels - skipButton.getHeight() - SKIP_TEXT_MARGIN_BOTTOM;
+    int bottomLeftX = SKIP_TEXT_MARGIN_LEFT;
+    int bottomLeftY = screenHeight - skipButton.getHeight() - SKIP_TEXT_MARGIN_BOTTOM;
 
     // top right
-    int topRightX = displayMetrics.widthPixels - skipButton.getWidth() - SKIP_TEXT_MARGIN;
+    int topRightX = screenWidth - skipButton.getWidth() - SKIP_TEXT_MARGIN_RIGHT;
     int topRightY = SKIP_TEXT_MARGIN_TOP;
 
     // top left
-    int topLeftX = SKIP_TEXT_MARGIN;
+    int topLeftX = SKIP_TEXT_MARGIN_LEFT;
     int topLeftY = SKIP_TEXT_MARGIN_TOP;
 
     if (!isContainedInOuterCircle(bottomRightX, bottomRightY)) {

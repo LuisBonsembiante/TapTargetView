@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 .rectTargetBorderRadius(4)
                 .cancelable(false)
                 .skipTextVisible(true)
+                .skipButtonMarginHorizontal(40)
                 .icon(droid)
                 .id(4)
         )

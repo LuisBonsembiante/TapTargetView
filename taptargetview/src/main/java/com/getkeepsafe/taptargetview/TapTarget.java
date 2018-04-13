@@ -99,7 +99,15 @@ public class TapTarget {
   boolean skipTextVisible = false;
   boolean isRect = false;
   float descriptionTextAlpha = 0.54f;
-  float skipTextAlpha = 0.54f;
+  float skipTextAlpha = 1;
+
+  int skipButtonMargin = 20;
+  int skipButtonMarginLeft = -1;
+  int skipButtonMarginRight = -1;
+  int skipButtonMarginTop = -1;
+  int skipButtonMarginBottom = -1;
+  int skipTextMarginHorizontal = -1;
+  int skipTextMarginVertical = -1;
 
   /**
    * Return a tap target for the overflow button from the given toolbar
@@ -532,6 +540,50 @@ public class TapTarget {
   /** Specify the target radius in dp. **/
   public TapTarget targetRadius(int targetRadius) {
     this.targetRadius = targetRadius;
+    return this;
+  }
+
+  /** Specify the skip button margin in dp. **/
+  public TapTarget skipButtonMargin(int margin) {
+    this.skipButtonMargin = margin;
+    return this;
+  }
+
+  /** Specify the skip button margin left in dp. **/
+  public TapTarget skipButtonMarginLeft(int margin) {
+    this.skipButtonMarginLeft = margin;
+    return this;
+  }
+
+  /** Specify the skip button margin right in dp. **/
+  public TapTarget skipButtonMarginRight(int margin) {
+    this.skipButtonMarginRight = margin;
+    return this;
+  }
+
+  /** Specify the skip button margin top in dp. **/
+  public TapTarget skipButtonMarginTop(int margin) {
+    this.skipButtonMarginTop = margin;
+    return this;
+  }
+
+  /** Specify the skip button margin bottom in dp. **/
+  public TapTarget skipButtonMarginBottom(int margin) {
+    this.skipButtonMarginBottom = margin;
+    return this;
+  }
+
+  /** Specify the skip button margin top in dp. **/
+  public TapTarget skipButtonMarginHorizontal(int margin) {
+    this.skipButtonMarginLeft = margin;
+    this.skipButtonMarginRight = margin;
+    return this;
+  }
+
+  /** Specify the skip button margin bottom in dp. **/
+  public TapTarget skipButtonMarginVertical(int margin) {
+    this.skipButtonMarginBottom = margin;
+    this.skipButtonMarginTop = margin;
     return this;
   }
 
