@@ -214,7 +214,7 @@ public class TapTargetView extends View {
     final Context context = dialog.getContext();
     final WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-    params.type = WindowManager.LayoutParams.TYPE_APPLICATION;
+    params.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
     params.format = PixelFormat.RGBA_8888;
     params.flags = 0;
     params.gravity = Gravity.START | Gravity.TOP;
