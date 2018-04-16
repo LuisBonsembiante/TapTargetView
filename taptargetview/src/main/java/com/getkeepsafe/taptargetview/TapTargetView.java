@@ -618,7 +618,6 @@ public class TapTargetView extends View {
     };
 
     getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
-    this.requestLayout();
 
     setFocusableInTouchMode(true);
     setClickable(true);
