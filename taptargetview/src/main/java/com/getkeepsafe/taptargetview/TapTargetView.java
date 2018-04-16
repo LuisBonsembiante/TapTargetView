@@ -583,12 +583,13 @@ public class TapTargetView extends View {
           Log.d("TapTargetView", "Dismissing");
           return;
         }
+        Log.d("TapTargetView", "onGlobalLayout updateTextLayouts");
         updateTextLayouts();
         target.onReady(new Runnable() {
           @Override
           public void run() {
             final int[] offset = new int[2];
-
+            Log.d("TapTargetView", "onGlobalLayout target.onReady");
             targetBounds.set(target.bounds());
 
             getLocationOnScreen(offset);
@@ -612,6 +613,7 @@ public class TapTargetView extends View {
 
             drawTintedTarget();
             requestFocus();
+            Log.d("TapTargetView", "onGlobalLayout calculateDimensions");
             calculateDimensions();
             startExpandAnimation();
 
