@@ -223,21 +223,21 @@ public class TapTargetView extends View {
     params.width = WindowManager.LayoutParams.MATCH_PARENT;
     params.height = WindowManager.LayoutParams.MATCH_PARENT;
 
-    FrameLayout layout =new FrameLayout(context);
+    final FrameLayout layout =new FrameLayout(context);
     final TapTargetView tapTargetView = new TapTargetView(context, layout, null, target, listener);
     layout.addView(tapTargetView, params);
     if (target.skipTextVisible) {
         layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
-    }
-    layout.getViewTreeObserver().addOnGlobalLayoutListener(
-            new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    Log.d("TapTargetViewDebug", "FrameLayout onGlobalLayout");
+        layout.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        Log.d("TapTargetViewDebug", "FrameLayout onGlobalLayout");
+                        layout.getViewTreeObserver().addOnGlobalLayoutListener(tapTargetView.globalLayoutListener);
+                    }
                 }
-            }
-    );
-    layout.setVisibility(View.VISIBLE);
+        );
+    }
     windowManager.addView(layout, params);
     return tapTargetView;
   }
@@ -399,7 +399,7 @@ public class TapTargetView extends View {
   private ValueAnimator[] animators = new ValueAnimator[]
       {expandAnimation, pulseAnimation, dismissConfirmAnimation, dismissAnimation};
 
-  private final ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
+  public final ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
 
   /**
    * This constructor should only be used directly for very specific use cases not covered by
@@ -578,7 +578,9 @@ public class TapTargetView extends View {
     globalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override
       public void onGlobalLayout() {
+         Log.d("TapTargetView", "TapTargetView onGlobalLayout");
         if (isDismissing) {
+          Log.d("TapTargetView", "Dismissing");
           return;
         }
         updateTextLayouts();
@@ -626,7 +628,9 @@ public class TapTargetView extends View {
       }
     };
 
-    getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+    if (!skipTextVisible) {
+        getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+    }
 
     setFocusableInTouchMode(true);
     setClickable(true);
@@ -854,7 +858,6 @@ public class TapTargetView extends View {
     if (isDismissed) return;
     if (outerCircleCenter == null) {
         //congnguyen91 add for avoiding stuck with transparent view
-        ((View) parent).setVisibility(View.VISIBLE);
 //        final WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 //        final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
 //        ViewUtil.removeView(windowManager, (View)parent);
