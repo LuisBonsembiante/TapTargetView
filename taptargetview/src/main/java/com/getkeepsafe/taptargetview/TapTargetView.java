@@ -844,10 +844,11 @@ public class TapTargetView extends View {
   protected void onDraw(Canvas c) {
     if (isDismissed) return;
     if (outerCircleCenter == null) {
+        getViewTreeObserver().dispatchOnGlobalLayout();
         // congnguyen91 add for avoiding stuck with transparent view
-        final WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-        ViewUtil.removeView(windowManager, (View)parent);
+//        final WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+//        final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+//        ViewUtil.removeView(windowManager, (View)parent);
         return;
     }
 
