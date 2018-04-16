@@ -574,7 +574,6 @@ public class TapTargetView extends View {
     targetCirclePulsePaint.setAntiAlias(true);
 
     applyTargetOptions(context);
-
     globalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override
       public void onGlobalLayout() {

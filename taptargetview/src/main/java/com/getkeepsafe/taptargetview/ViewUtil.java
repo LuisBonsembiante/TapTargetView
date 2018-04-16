@@ -17,6 +17,7 @@ package com.getkeepsafe.taptargetview;
 
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewManager;
 import android.view.ViewTreeObserver;
@@ -32,7 +33,9 @@ class ViewUtil {
 
   /** Executes the given {@link java.lang.Runnable} when the view is laid out **/
   static void onLaidOut(final View view, final Runnable runnable) {
+    Log.d("TapTargetView", "TapTarget onLaidOut");
     if (isLaidOut(view)) {
+      Log.d("TapTargetView", "isLaidOut");
       runnable.run();
       return;
     }
@@ -44,12 +47,15 @@ class ViewUtil {
         final ViewTreeObserver trueObserver;
 
         if (observer.isAlive()) {
+            Log.d("TapTargetView", "onLaidOut observer.isAlive()");
           trueObserver = observer;
         } else {
+            Log.d("TapTargetView", "onLaidOut observer not Alive()");
           trueObserver = view.getViewTreeObserver();
         }
 
         removeOnGlobalLayoutListener(trueObserver, this);
+        Log.d("TapTargetView", "onLaidOut removeOnGlobalLayoutListener");
 
         runnable.run();
       }
