@@ -230,7 +230,6 @@ public class TapTargetView extends View {
         layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
     }
     windowManager.addView(layout, params);
-    Log.d("TapTargetViewDebug", "createNew tapTargetView");
     return tapTargetView;
   }
 
@@ -571,7 +570,6 @@ public class TapTargetView extends View {
       @Override
       public void onGlobalLayout() {
         if (isDismissing) {
-          Log.d("TapTargetViewDebug", "globalLayoutListener is Dismissing return");
           return;
         }
         updateTextLayouts();
@@ -604,7 +602,6 @@ public class TapTargetView extends View {
             drawTintedTarget();
             requestFocus();
             calculateDimensions();
-            Log.d("TapTargetViewDebug", "calculateDimensions");
             startExpandAnimation();
 
             if (skipTextVisible) {
@@ -821,7 +818,6 @@ public class TapTargetView extends View {
 
   @Override
   protected void onDetachedFromWindow() {
-    Log.d("TapTargetViewDebug", "onDetachedFromWindow");
     super.onDetachedFromWindow();
     onDismiss(false);
   }
@@ -847,10 +843,15 @@ public class TapTargetView extends View {
 
   @Override
   protected void onDraw(Canvas c) {
-    Log.d("TapTargetViewDebug", "onDraw STEP 0 tapTargetView");
-    if (isDismissed || outerCircleCenter == null) return;
+    if (isDismissed) return;
+    if (outerCircleCenter == null) {
+        // congnguyen91 add for avoiding stuck with transparent view
+        final WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+        ViewUtil.removeView(windowManager, (View)parent);
+        return;
+    }
 
-    Log.d("TapTargetViewDebug", "onDraw STEP 1 tapTargetView");
     if (topBoundary > 0 && bottomBoundary > 0) {
       c.clipRect(0, topBoundary, getWidth(), bottomBoundary);
     }
@@ -981,14 +982,12 @@ public class TapTargetView extends View {
 
   private void finishDismiss(boolean userInitiated) {
     onDismiss(userInitiated);
-    Log.d("TapTargetViewDebug", "finishDismiss tapTargetView");
     ViewUtil.removeView(parent, TapTargetView.this);
     ViewUtil.removeView(parent, this.skipButton);
     if (boundingParent == null) {
       final WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
       final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
       ViewUtil.removeView(windowManager, (View)parent);
-      Log.d("TapTargetViewDebug", "finishDismiss removeView");
     }
   }
 
@@ -1175,9 +1174,7 @@ public class TapTargetView extends View {
   }
 
   int[] getOuterCircleCenterPoint() {
-    Log.d("TapTapgetViewDebug", "getOuterCircleCenterPoint");
     if (inGutter(targetBounds.centerY())) {
-      Log.d("TapTapgetViewDebug", "targetBounds " + targetBounds.centerX() + "_" + targetBounds.centerY());
       return new int[]{targetBounds.centerX(), targetBounds.centerY()};
     }
 
@@ -1193,7 +1190,6 @@ public class TapTargetView extends View {
         targetBounds.centerY() - TARGET_RADIUS - TARGET_PADDING - totalTextHeight + titleHeight
         :
         targetBounds.centerY() + TARGET_RADIUS + TARGET_PADDING + titleHeight;
-    Log.d("TapTapgetViewDebug", "Return " + (left + right) / 2 + "_" + centerY);
     return new int[] { (left + right) / 2, centerY };
   }
 
