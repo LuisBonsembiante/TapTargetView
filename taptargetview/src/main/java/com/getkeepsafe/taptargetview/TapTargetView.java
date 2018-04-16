@@ -619,7 +619,12 @@ public class TapTargetView extends View {
       }
     };
 
-    getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+    if (skipTextVisible) {
+        ((View)parent).getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+    }
+    else {
+        getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+    }
 
     setFocusableInTouchMode(true);
     setClickable(true);
