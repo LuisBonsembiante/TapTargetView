@@ -228,6 +228,7 @@ public class TapTargetView extends View {
     layout.addView(tapTargetView, params);
     if (target.skipTextVisible) {
         layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
+        layout.getViewTreeObserver().addOnGlobalLayoutListener(tapTargetView.globalLayoutListener);
     }
     windowManager.addView(layout, params);
     Log.d("TapTargetViewDebug", "createNew tapTargetView");
@@ -391,7 +392,7 @@ public class TapTargetView extends View {
   private ValueAnimator[] animators = new ValueAnimator[]
       {expandAnimation, pulseAnimation, dismissConfirmAnimation, dismissAnimation};
 
-  private final ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
+  public final ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
 
   /**
    * This constructor should only be used directly for very specific use cases not covered by
@@ -571,6 +572,7 @@ public class TapTargetView extends View {
       @Override
       public void onGlobalLayout() {
         if (isDismissing) {
+          Log.d("TapTargetViewDebug", "globalLayoutListener is Dismissing return");
           return;
         }
         updateTextLayouts();
@@ -619,10 +621,7 @@ public class TapTargetView extends View {
       }
     };
 
-    if (skipTextVisible) {
-        ((View)parent).getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
-    }
-    else {
+    if (!skipTextVisible) {
         getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
     }
 
