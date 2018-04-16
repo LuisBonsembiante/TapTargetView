@@ -231,6 +231,9 @@ public class TapTargetView extends View {
         layout.getViewTreeObserver().addOnGlobalLayoutListener(tapTargetView.globalLayoutListener);
     }
     windowManager.addView(layout, params);
+    if (target.skipTextVisible) {
+        layout.requestLayout();
+    }
     Log.d("TapTargetViewDebug", "createNew tapTargetView");
     return tapTargetView;
   }
