@@ -229,6 +229,7 @@ public class TapTargetView extends View {
     if (target.skipTextVisible) {
         layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
     }
+    layout.setVisibility(View.VISIBLE);
     windowManager.addView(layout, params);
     return tapTargetView;
   }
@@ -844,12 +845,8 @@ public class TapTargetView extends View {
   protected void onDraw(Canvas c) {
     if (isDismissed) return;
     if (outerCircleCenter == null) {
-        final WindowManager windowManager
-                = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        final DisplayMetrics displayMetrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
-        this.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
-        // congnguyen91 add for avoiding stuck with transparent view
+        //congnguyen91 add for avoiding stuck with transparent view
+        ((View) parent).setVisibility(View.VISIBLE);
 //        final WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 //        final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
 //        ViewUtil.removeView(windowManager, (View)parent);
