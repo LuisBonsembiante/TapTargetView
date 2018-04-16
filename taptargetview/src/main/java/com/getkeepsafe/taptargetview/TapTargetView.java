@@ -621,6 +621,7 @@ public class TapTargetView extends View {
     };
 
     getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+    this.requestLayout();
 
     setFocusableInTouchMode(true);
     setClickable(true);
@@ -847,15 +848,6 @@ public class TapTargetView extends View {
   @Override
   protected void onDraw(Canvas c) {
     Log.d("TapTargetViewDebug", "onDraw STEP 0 tapTargetView");
-    if (isDismissed) {
-        Log.d("TapTargetViewDebug", "isDismissed ");
-    }
-    if (outerCircleCenter != null) {
-        Log.d("TapTargetViewDebug", "outerCircleCenter  " + outerCircleCenter[0] + "_" + outerCircleCenter[1]);
-    }
-    if (outerCircleCenter == null) {
-        this.requestLayout();
-    }
     if (isDismissed || outerCircleCenter == null) return;
 
     Log.d("TapTargetViewDebug", "onDraw STEP 1 tapTargetView");
