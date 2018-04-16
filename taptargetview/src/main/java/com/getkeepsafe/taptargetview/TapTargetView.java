@@ -818,6 +818,7 @@ public class TapTargetView extends View {
 
   @Override
   protected void onDetachedFromWindow() {
+    Log.d("TapTargetViewDebug", "onDetachedFromWindow");
     super.onDetachedFromWindow();
     onDismiss(false);
   }
@@ -844,6 +845,9 @@ public class TapTargetView extends View {
   @Override
   protected void onDraw(Canvas c) {
     Log.d("TapTargetViewDebug", "onDraw STEP 0 tapTargetView");
+    if (isDismissed) {
+        Log.d("TapTargetViewDebug", "isDismissed ");
+    }
     if (isDismissed || outerCircleCenter == null) return;
 
     Log.d("TapTargetViewDebug", "onDraw STEP 1 tapTargetView");
@@ -984,6 +988,7 @@ public class TapTargetView extends View {
       final WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
       final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
       ViewUtil.removeView(windowManager, (View)parent);
+      Log.d("TapTargetViewDebug", "finishDismiss removeView");
     }
   }
 
