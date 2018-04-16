@@ -603,6 +603,7 @@ public class TapTargetView extends View {
             drawTintedTarget();
             requestFocus();
             calculateDimensions();
+            Log.d("TapTargetViewDebug", "calculateDimensions");
             startExpandAnimation();
 
             if (skipTextVisible) {
@@ -847,6 +848,9 @@ public class TapTargetView extends View {
     Log.d("TapTargetViewDebug", "onDraw STEP 0 tapTargetView");
     if (isDismissed) {
         Log.d("TapTargetViewDebug", "isDismissed ");
+    }
+    if (outerCircleCenter != null) {
+        Log.d("TapTargetViewDebug", "outerCircleCenter  " + outerCircleCenter[0] + "_" + outerCircleCenter[1]);
     }
     if (isDismissed || outerCircleCenter == null) return;
 
@@ -1175,7 +1179,9 @@ public class TapTargetView extends View {
   }
 
   int[] getOuterCircleCenterPoint() {
+    Log.d("TapTapgetViewDebug", "getOuterCircleCenterPoint");
     if (inGutter(targetBounds.centerY())) {
+      Log.d("TapTapgetViewDebug", "targetBounds " + targetBounds.centerX() + "_" + targetBounds.centerY());
       return new int[]{targetBounds.centerX(), targetBounds.centerY()};
     }
 
@@ -1191,7 +1197,7 @@ public class TapTargetView extends View {
         targetBounds.centerY() - TARGET_RADIUS - TARGET_PADDING - totalTextHeight + titleHeight
         :
         targetBounds.centerY() + TARGET_RADIUS + TARGET_PADDING + titleHeight;
-
+    Log.d("TapTapgetViewDebug", "Return " + (left + right) / 2 + "_" + centerY);
     return new int[] { (left + right) / 2, centerY };
   }
 
