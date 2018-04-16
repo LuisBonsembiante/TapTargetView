@@ -33,35 +33,34 @@ class ViewUtil {
 
   /** Executes the given {@link java.lang.Runnable} when the view is laid out **/
   static void onLaidOut(final View view, final Runnable runnable) {
-    Log.d("TapTargetView", "TapTarget onLaidOut");
     if (isLaidOut(view)) {
-      Log.d("TapTargetView", "isLaidOut");
       runnable.run();
       return;
     }
-    // this for testing
-    runnable.run();
 
-//    final ViewTreeObserver observer = view.getViewTreeObserver();
-//    observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//      @Override
-//      public void onGlobalLayout() {
-//        final ViewTreeObserver trueObserver;
-//
-//        if (observer.isAlive()) {
-//            Log.d("TapTargetView", "onLaidOut observer.isAlive()");
-//          trueObserver = observer;
-//        } else {
-//            Log.d("TapTargetView", "onLaidOut observer not Alive()");
-//          trueObserver = view.getViewTreeObserver();
-//        }
-//
-//        removeOnGlobalLayoutListener(trueObserver, this);
-//        Log.d("TapTargetView", "onLaidOut removeOnGlobalLayoutListener");
-//
-//        runnable.run();
-//      }
-//    });
+    try {
+      // congnguyen91  add try catch & runnable.run();
+      // Do the last try - cause of addOnGlobalLayoutListener not callback the runnable
+      runnable.run();
+    }
+    catch(Exception e) {
+        final ViewTreeObserver observer = view.getViewTreeObserver();
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override
+          public void onGlobalLayout() {
+            final ViewTreeObserver trueObserver;
+
+            if (observer.isAlive()) {
+              trueObserver = observer;
+            } else {
+              trueObserver = view.getViewTreeObserver();
+            }
+
+            removeOnGlobalLayoutListener(trueObserver, this);
+            runnable.run();
+          }
+        });
+    }
   }
 
   @SuppressWarnings("deprecation")

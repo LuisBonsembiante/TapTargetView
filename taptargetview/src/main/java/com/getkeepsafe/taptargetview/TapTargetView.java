@@ -228,15 +228,6 @@ public class TapTargetView extends View {
     layout.addView(tapTargetView, params);
     if (target.skipTextVisible) {
         layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
-        layout.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        Log.d("TapTargetViewDebug", "FrameLayout onGlobalLayout");
-                        layout.getViewTreeObserver().addOnGlobalLayoutListener(tapTargetView.globalLayoutListener);
-                    }
-                }
-        );
     }
     windowManager.addView(layout, params);
     return tapTargetView;
@@ -577,18 +568,14 @@ public class TapTargetView extends View {
     globalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override
       public void onGlobalLayout() {
-         Log.d("TapTargetView", "TapTargetView onGlobalLayout");
         if (isDismissing) {
-          Log.d("TapTargetView", "Dismissing");
           return;
         }
-        Log.d("TapTargetView", "onGlobalLayout updateTextLayouts");
         updateTextLayouts();
         target.onReady(new Runnable() {
           @Override
           public void run() {
             final int[] offset = new int[2];
-            Log.d("TapTargetView", "onGlobalLayout target.onReady");
             targetBounds.set(target.bounds());
 
             getLocationOnScreen(offset);
@@ -612,7 +599,6 @@ public class TapTargetView extends View {
 
             drawTintedTarget();
             requestFocus();
-            Log.d("TapTargetView", "onGlobalLayout calculateDimensions");
             calculateDimensions();
             startExpandAnimation();
 
@@ -629,9 +615,7 @@ public class TapTargetView extends View {
       }
     };
 
-    if (!skipTextVisible) {
-        getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
-    }
+    getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
 
     setFocusableInTouchMode(true);
     setClickable(true);
@@ -858,10 +842,10 @@ public class TapTargetView extends View {
   protected void onDraw(Canvas c) {
     if (isDismissed) return;
     if (outerCircleCenter == null) {
-        //congnguyen91 add for avoiding stuck with transparent view
-//        final WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-//        final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-//        ViewUtil.removeView(windowManager, (View)parent);
+        // congnguyen91 add for avoiding stuck with transparent view
+        final WindowManager windowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        final WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+        ViewUtil.removeView(windowManager, (View)parent);
         return;
     }
 
