@@ -228,7 +228,6 @@ public class TapTargetView extends View {
     layout.addView(tapTargetView, params);
     if (target.skipTextVisible) {
         layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
-        layout.getViewTreeObserver().addOnGlobalLayoutListener(tapTargetView.globalLayoutListener);
     }
     windowManager.addView(layout, params);
     Log.d("TapTargetViewDebug", "createNew tapTargetView");
@@ -392,7 +391,7 @@ public class TapTargetView extends View {
   private ValueAnimator[] animators = new ValueAnimator[]
       {expandAnimation, pulseAnimation, dismissConfirmAnimation, dismissAnimation};
 
-  public final ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
+  private final ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener;
 
   /**
    * This constructor should only be used directly for very specific use cases not covered by
@@ -621,9 +620,7 @@ public class TapTargetView extends View {
       }
     };
 
-    if (!skipTextVisible) {
-        getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
-    }
+    getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
 
     setFocusableInTouchMode(true);
     setClickable(true);
@@ -856,8 +853,8 @@ public class TapTargetView extends View {
     if (outerCircleCenter != null) {
         Log.d("TapTargetViewDebug", "outerCircleCenter  " + outerCircleCenter[0] + "_" + outerCircleCenter[1]);
     }
-    if (outerCircleCenter == null && skipTextVisible) {
-        ((View) parent).requestLayout();
+    if (outerCircleCenter == null) {
+        this.requestLayout();
     }
     if (isDismissed || outerCircleCenter == null) return;
 
