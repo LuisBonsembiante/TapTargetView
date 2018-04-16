@@ -231,9 +231,6 @@ public class TapTargetView extends View {
         layout.getViewTreeObserver().addOnGlobalLayoutListener(tapTargetView.globalLayoutListener);
     }
     windowManager.addView(layout, params);
-    if (target.skipTextVisible) {
-        layout.requestLayout();
-    }
     Log.d("TapTargetViewDebug", "createNew tapTargetView");
     return tapTargetView;
   }
@@ -858,6 +855,9 @@ public class TapTargetView extends View {
     }
     if (outerCircleCenter != null) {
         Log.d("TapTargetViewDebug", "outerCircleCenter  " + outerCircleCenter[0] + "_" + outerCircleCenter[1]);
+    }
+    if (outerCircleCenter == null && skipTextVisible) {
+        ((View) parent).requestLayout();
     }
     if (isDismissed || outerCircleCenter == null) return;
 
