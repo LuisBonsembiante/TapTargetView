@@ -229,6 +229,14 @@ public class TapTargetView extends View {
     if (target.skipTextVisible) {
         layout.addView(tapTargetView.skipButton, tapTargetView.skipButtonLayoutParams);
     }
+    layout.getViewTreeObserver().addOnGlobalLayoutListener(
+            new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    Log.d("TapTargetViewDebug", "FrameLayout onGlobalLayout");
+                }
+            }
+    );
     layout.setVisibility(View.VISIBLE);
     windowManager.addView(layout, params);
     return tapTargetView;
