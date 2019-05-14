@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="skip_button_normal" type="id">skip_button_normal</item>
-    <item name="skip_button_focused" type="id">skip_button_focused</item>
-    <item name="skip_button_pressed" type="id">skip_button_pressed</item>
+    <item name="skip_button_normal" type="id"/>
+    <item name="skip_button_focused" type="id"/>
+    <item name="skip_button_pressed" type="id"/>
 
 </resources>
